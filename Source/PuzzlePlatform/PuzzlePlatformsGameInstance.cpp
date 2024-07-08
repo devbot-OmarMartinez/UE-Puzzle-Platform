@@ -6,6 +6,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "PlatformTriggerAlt.h"
 #include "Blueprint/UserWidget.h"
+#include "MenuSystem/MainMenu.h"
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -24,9 +25,14 @@ void UPuzzlePlatformsGameInstance::Init()
 
 void UPuzzlePlatformsGameInstance::Host()
 {
+    if (Menu != nullptr) 
+    {
+        Menu->Teardown();
+    }
+
     if (GEngine)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Hosting!"));
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Hosting ..."));
 
         UWorld* world = GetWorld();
         if (world != nullptr) {
@@ -55,13 +61,13 @@ void UPuzzlePlatformsGameInstance::LoadMenu()
         return;
     }
 
-    UUserWidget* menu = CreateWidget<UUserWidget>(this, MenuClass);
-    if (menu == nullptr) 
+    Menu = CreateWidget<UMainMenu>(this, MenuClass);
+    if (Menu == nullptr) 
     {
         return;
     }
 
-    menu->AddToViewport();
+    /*menu->AddToViewport();
 
     APlayerController* playerController = GetFirstLocalPlayerController();
     if (playerController == nullptr)
@@ -74,5 +80,9 @@ void UPuzzlePlatformsGameInstance::LoadMenu()
     inputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 
     playerController->SetInputMode(inputModeData);
-    playerController->bShowMouseCursor = true;
+    playerController->bShowMouseCursor = true;*/
+
+    Menu->bIsFocusable = true;
+    Menu->Setup();
+    Menu->SetMenuInterface(this);
 }
