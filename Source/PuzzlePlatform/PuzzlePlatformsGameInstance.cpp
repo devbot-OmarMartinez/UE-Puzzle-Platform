@@ -86,6 +86,10 @@ void UPuzzlePlatformsGameInstance::CreateSession()
 {
     if (SessionInterface.IsValid()) {
         FOnlineSessionSettings SessionSettings;
+        SessionSettings.bIsLANMatch = true;
+        SessionSettings.NumPublicConnections = 2;
+        SessionSettings.bShouldAdvertise = true;
+
         SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
     }
 }
@@ -116,6 +120,13 @@ void UPuzzlePlatformsGameInstance::OnCreateSessionComplete(FName SessionName, bo
 
 void UPuzzlePlatformsGameInstance::OnFindSessionsComplete(bool Success)
 {
+    if (Success && SessionSearch.IsValid())
+    {
+        for (const FOnlineSessionSearchResult& SearchResult : SessionSearch->SearchResults)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Found session names: %s"), *SearchResult.GetSessionIdStr());
+        }
+    }
     UE_LOG(LogTemp, Warning, TEXT("Finished Find Session"));
 }
 
