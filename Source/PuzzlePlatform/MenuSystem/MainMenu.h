@@ -70,4 +70,6 @@ private:
 	void ExitGame();
 
 	TOptional<uint32> SelectedIndex;
+
+	void UpdateChildren();
 };
