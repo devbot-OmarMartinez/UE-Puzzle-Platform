@@ -11,7 +11,7 @@
 #include "MenuSystem/MainMenu.h"
 #include "MenuSystem/MenuWidget.h"
 
-const static FName SESSION_NAME = NAME_GameSession;
+const static FName SESSION_NAME = TEXT("Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer& ObjectInitializer)
@@ -51,6 +51,11 @@ void UPuzzlePlatformsGameInstance::Init()
     }
 
 	UE_LOG(LogTemp, Warning, TEXT("[UPuzzlePlatformsGameInstance][Init]: Found class %s"), *MenuClass->GetName());
+
+    if (GEngine != nullptr)
+    {
+        GEngine->OnNetworkFailure().AddUObject(this, &UPuzzlePlatformsGameInstance::OnNetworkFailure);
+    }
 }
 
 void UPuzzlePlatformsGameInstance::Host(FString ServerName)
@@ -75,6 +80,11 @@ void UPuzzlePlatformsGameInstance::OnDestroySessionComplete(FName SessionName, b
     if (Success) {
         CreateSession();
     }
+}
+
+void UPuzzlePlatformsGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString)
+{
+    LoadMainMenu();
 }
 
 void UPuzzlePlatformsGameInstance::CreateSession()
